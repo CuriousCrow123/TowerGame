@@ -1,6 +1,317 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c0uhp4i23nicu"]
 
-[ext_resource type="Script" path="res://main/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://b1tmyjvkywq7i" path="res://main/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cafca040868ao" path="res://features/ui/scripts/hud.gd" id="2_hud"]
+[ext_resource type="Script" uid="uid://ctso1d6s04v62" path="res://features/ui/scripts/main_menu.gd" id="3_menu"]
+[ext_resource type="Script" uid="uid://cneh6msurl6v4" path="res://features/ui/scripts/game_over_panel.gd" id="4_gameover"]
+[ext_resource type="Script" uid="uid://dcs5dtw1k88lb" path="res://features/gameplay/scripts/gameplay_controller.gd" id="5_gameplay"]
+[ext_resource type="Script" uid="uid://bupjdbtpn8su5" path="res://features/camera/scripts/tower_camera.gd" id="6_camera"]
+[ext_resource type="Script" uid="uid://cmiqu0b58ykoy" path="res://features/tower/scripts/ground.gd" id="7_ground"]
+[ext_resource type="Script" uid="uid://bvixcd4r4fpm8" path="res://features/gameplay/scripts/block_input_handler.gd" id="8_input"]
 
-[node name="Main" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(720, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
+size = Vector2(900, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
+size = Vector2(100, 2800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right"]
+size = Vector2(100, 2800)
+
+[node name="Main" type="Node2D" unique_id=304334761]
 script = ExtResource("1_main")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=557176959]
+layer = 10
+script = ExtResource("2_hud")
+
+[node name="ScoreLabel" type="Label" parent="HUD" unique_id=166229758]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 20.0
+offset_right = 100.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="HighScoreLabel" type="Label" parent="HUD" unique_id=506368080]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 60.0
+offset_right = 100.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 18
+text = "Best: 0"
+horizontal_alignment = 1
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=1029400453]
+layer = 20
+
+[node name="MainMenu" type="Control" parent="UILayer" unique_id=756335282]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_menu")
+
+[node name="TitleLabel" type="Label" parent="UILayer/MainMenu" unique_id=199769951]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 60.0
+offset_right = 340.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 80
+text = "TOWER STACK"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UILayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 180.0
+offset_right = 340.0
+offset_bottom = 240.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+text = "Stack as high as you can!"
+horizontal_alignment = 1
+
+[node name="ControlsDivider" type="Label" parent="UILayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 290.0
+offset_right = 340.0
+offset_bottom = 330.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+text = "--- CONTROLS ---"
+horizontal_alignment = 1
+
+[node name="KeyboardLabel" type="Label" parent="UILayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 350.0
+offset_right = 340.0
+offset_bottom = 600.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 26
+text = "A / D - Move
+Q / E - Rotate
+S - Drop
+Space - Fast Drop"
+horizontal_alignment = 1
+
+[node name="TouchLabel" type="Label" parent="UILayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 620.0
+offset_right = 340.0
+offset_bottom = 830.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+text = "Drag to move, release to drop
+Swipe down for fast drop
+Hold 2nd finger to rotate
+(left side = CCW, right = CW)"
+horizontal_alignment = 1
+
+[node name="GoalLabel" type="Label" parent="UILayer/MainMenu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 860.0
+offset_right = 340.0
+offset_bottom = 920.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+text = "Block hits ground = Game Over!"
+horizontal_alignment = 1
+
+[node name="PlayButton" type="Button" parent="UILayer/MainMenu" unique_id=777222736]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 980.0
+offset_right = 140.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "PLAY"
+
+[node name="GameOverPanel" type="Control" parent="UILayer" unique_id=1090652925]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_gameover")
+
+[node name="GameOverLabel" type="Label" parent="UILayer/GameOverPanel" unique_id=1217529666]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 80.0
+offset_right = 340.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 72
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="UILayer/GameOverPanel" unique_id=2098049787]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 220.0
+offset_right = 340.0
+offset_bottom = 290.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 44
+text = "Height: 0"
+horizontal_alignment = 1
+
+[node name="HighScoreLabel" type="Label" parent="UILayer/GameOverPanel" unique_id=1411496379]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 300.0
+offset_right = 340.0
+offset_bottom = 360.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+text = "Best: 0"
+horizontal_alignment = 1
+
+[node name="ControlsDivider" type="Label" parent="UILayer/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 420.0
+offset_right = 340.0
+offset_bottom = 460.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+text = "--- CONTROLS ---"
+horizontal_alignment = 1
+
+[node name="ControlsLabel" type="Label" parent="UILayer/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -340.0
+offset_top = 480.0
+offset_right = 340.0
+offset_bottom = 750.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+text = "A / D - Move    Q / E - Rotate
+S - Drop    Space - Fast Drop
+
+Drag to move, release to drop
+Swipe down for fast drop
+Hold 2nd finger to rotate"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="UILayer/GameOverPanel" unique_id=1791628486]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 980.0
+offset_right = 140.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "RETRY"
+
+[node name="Gameplay" type="Node2D" parent="." unique_id=628282140]
+script = ExtResource("5_gameplay")
+
+[node name="TowerCamera" type="Camera2D" parent="Gameplay" unique_id=1508495182]
+position = Vector2(360, 640)
+script = ExtResource("6_camera")
+
+[node name="Ground" type="StaticBody2D" parent="Gameplay" unique_id=1347072787]
+position = Vector2(360, 1200)
+script = ExtResource("7_ground")
+
+[node name="GroundCollision" type="CollisionShape2D" parent="Gameplay/Ground" unique_id=540970217]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="BlockContainer" type="Node2D" parent="Gameplay" unique_id=744987839]
+
+[node name="BlockInputHandler" type="Node" parent="Gameplay" unique_id=1818202184]
+script = ExtResource("8_input")
+
+[node name="KillZoneBottom" type="Area2D" parent="Gameplay" unique_id=290203068]
+position = Vector2(360, 1400)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/KillZoneBottom" unique_id=447477473]
+shape = SubResource("RectangleShape2D_bottom")
+
+[node name="KillZoneLeft" type="Area2D" parent="Gameplay" unique_id=1920176040]
+position = Vector2(-100, 640)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/KillZoneLeft" unique_id=484822447]
+shape = SubResource("RectangleShape2D_left")
+
+[node name="KillZoneRight" type="Area2D" parent="Gameplay" unique_id=2066741711]
+position = Vector2(820, 640)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/KillZoneRight" unique_id=1778295425]
+shape = SubResource("RectangleShape2D_right")
