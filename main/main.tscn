@@ -56,6 +56,39 @@ theme_override_font_sizes/font_size = 18
 text = "Best: 0"
 horizontal_alignment = 1
 
+[node name="RotateCCWButton" type="Button" parent="HUD"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 1100.0
+offset_right = 170.0
+offset_bottom = 1220.0
+theme_override_font_sizes/font_size = 40
+text = "<<"
+
+[node name="RotateCWButton" type="Button" parent="HUD"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 550.0
+offset_top = 1100.0
+offset_right = 700.0
+offset_bottom = 1220.0
+theme_override_font_sizes/font_size = 40
+text = ">>"
+
+[node name="FastDropButton" type="Button" parent="HUD"]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 1100.0
+offset_right = 80.0
+offset_bottom = 1220.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "DROP"
+
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=1029400453]
 layer = 20
 

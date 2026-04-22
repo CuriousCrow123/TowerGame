@@ -1,17 +1,41 @@
 class_name HUD
 extends CanvasLayer
 
+signal rotate_cw_pressed
+signal rotate_cw_released
+signal rotate_ccw_pressed
+signal rotate_ccw_released
+signal fast_drop_pressed
+
 @onready var _score_label: Label = %ScoreLabel
 @onready var _high_score_label: Label = %HighScoreLabel
+@onready var _rotate_ccw: Button = %RotateCCWButton
+@onready var _rotate_cw: Button = %RotateCWButton
+@onready var _fast_drop: Button = %FastDropButton
 
 
 func _ready() -> void:
 	assert(_score_label != null, "HUD: ScoreLabel not found")
 	assert(_high_score_label != null, "HUD: HighScoreLabel not found")
+	assert(_rotate_ccw != null, "HUD: RotateCCWButton not found")
+	assert(_rotate_cw != null, "HUD: RotateCWButton not found")
+	assert(_fast_drop != null, "HUD: FastDropButton not found")
 	set_process(false)
 	set_physics_process(false)
 	_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_high_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	_rotate_ccw.button_down.connect(func() -> void: rotate_ccw_pressed.emit())
+	_rotate_ccw.button_up.connect(func() -> void: rotate_ccw_released.emit())
+	_rotate_cw.button_down.connect(func() -> void: rotate_cw_pressed.emit())
+	_rotate_cw.button_up.connect(func() -> void: rotate_cw_released.emit())
+	_fast_drop.pressed.connect(func() -> void: fast_drop_pressed.emit())
+
+	var is_touch: bool = DisplayServer.is_touchscreen_available()
+	_rotate_ccw.visible = is_touch
+	_rotate_cw.visible = is_touch
+	_fast_drop.visible = is_touch
+
 	Events.score_changed.connect(_on_score_changed)
 	Events.high_score_beaten.connect(_on_high_score_beaten)
 	Events.game_started.connect(_on_game_started)
