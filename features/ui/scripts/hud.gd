@@ -31,10 +31,10 @@ func _ready() -> void:
 	_rotate_cw.button_up.connect(func() -> void: rotate_cw_released.emit())
 	_fast_drop.pressed.connect(func() -> void: fast_drop_pressed.emit())
 
-	var is_touch: bool = DisplayServer.is_touchscreen_available()
-	_rotate_ccw.visible = is_touch
-	_rotate_cw.visible = is_touch
-	_fast_drop.visible = is_touch
+	var is_mobile: bool = _detect_mobile()
+	_rotate_ccw.visible = is_mobile
+	_rotate_cw.visible = is_mobile
+	_fast_drop.visible = is_mobile
 
 	Events.score_changed.connect(_on_score_changed)
 	Events.high_score_beaten.connect(_on_high_score_beaten)
@@ -52,6 +52,13 @@ func _on_high_score_beaten(new_high: int) -> void:
 func _on_game_started() -> void:
 	_score_label.text = "Height: 0"
 	_high_score_label.text = "Best: " + str(GameState.high_score)
+
+
+func _detect_mobile() -> bool:
+	if OS.get_name() == "Web":
+		var js_code: String = "(/Android|iPhone|iPad|iPod|Mobile/i).test(navigator.userAgent)"
+		return JavaScriptBridge.eval(js_code) as bool
+	return OS.get_name() == "Android" or OS.get_name() == "iOS"
 
 
 func show_hud() -> void:
