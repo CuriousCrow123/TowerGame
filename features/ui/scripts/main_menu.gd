@@ -8,6 +8,7 @@ func _ready() -> void:
 	assert(_play_button != null, "MainMenu: PlayButton not found")
 	set_process(false)
 	set_physics_process(false)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_play_button.pressed.connect(_on_play_pressed)
 
 

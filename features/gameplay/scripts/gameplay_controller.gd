@@ -4,7 +4,7 @@ extends Node2D
 const GROUND_Y: float = 1200.0
 const SPAWN_X: float = 360.0
 const SPAWN_DELAY: float = 0.2
-const SPAWN_MARGIN: float = 150.0
+const SPAWN_MARGIN: float = 350.0
 
 const _BLOCK_SCENE_PATH: String = "res://features/blocks/scenes/block.tscn"
 var _block_scene: PackedScene
