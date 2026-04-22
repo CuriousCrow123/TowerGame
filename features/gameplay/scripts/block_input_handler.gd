@@ -58,53 +58,41 @@ func _process(delta: float) -> void:
 	_active_block.global_position.x = new_x
 
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if _active_block == null:
 		return
 
 	if event is InputEventScreenTouch:
-		_handle_touch(event as InputEventScreenTouch)
+		var touch: InputEventScreenTouch = event as InputEventScreenTouch
+		if touch.index == 0:
+			if touch.pressed:
+				_start_drag(touch.position)
+			else:
+				_end_drag()
+			get_viewport().set_input_as_handled()
+
 	elif event is InputEventScreenDrag:
-		_handle_drag(event as InputEventScreenDrag)
+		var drag: InputEventScreenDrag = event as InputEventScreenDrag
+		if drag.index == 0 and _is_dragging:
+			_target_x += drag.relative.x
+			_check_swipe_down(drag)
+			get_viewport().set_input_as_handled()
+
 	elif event is InputEventMouseButton:
-		_handle_mouse_button(event as InputEventMouseButton)
+		var mb: InputEventMouseButton = event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.pressed:
+				_start_drag(mb.position)
+			else:
+				_end_drag()
+
 	elif event is InputEventMouseMotion:
-		_handle_mouse_motion(event as InputEventMouseMotion)
+		var mm: InputEventMouseMotion = event as InputEventMouseMotion
+		if _is_dragging and (mm.button_mask & MOUSE_BUTTON_MASK_LEFT):
+			_target_x += mm.relative.x
+
 	elif event is InputEventKey:
 		_handle_key(event as InputEventKey)
-
-
-func _handle_touch(touch: InputEventScreenTouch) -> void:
-	if touch.index == 0:
-		if touch.pressed:
-			_start_drag(touch.position)
-		else:
-			_end_drag()
-	elif touch.index == 1:
-		if touch.pressed:
-			_start_touch_rotate(touch.position)
-		else:
-			_rotate_direction = 0
-
-
-func _handle_drag(drag: InputEventScreenDrag) -> void:
-	if drag.index == 0 and _is_dragging:
-		_target_x += drag.relative.x
-		_check_swipe_down(drag)
-
-
-func _handle_mouse_button(mb: InputEventMouseButton) -> void:
-	if mb.button_index != MOUSE_BUTTON_LEFT:
-		return
-	if mb.pressed:
-		_start_drag(mb.position)
-	else:
-		_end_drag()
-
-
-func _handle_mouse_motion(mm: InputEventMouseMotion) -> void:
-	if _is_dragging and (mm.button_mask & MOUSE_BUTTON_MASK_LEFT):
-		_target_x += mm.relative.x
 
 
 func _handle_key(key: InputEventKey) -> void:
@@ -133,13 +121,6 @@ func _end_drag() -> void:
 	if _is_dragging:
 		_is_dragging = false
 		_drop_block()
-
-
-func _start_touch_rotate(pos: Vector2) -> void:
-	if pos.x < VIEWPORT_WIDTH * 0.5:
-		_rotate_direction = -1
-	else:
-		_rotate_direction = 1
 
 
 func _check_swipe_down(drag: InputEventScreenDrag) -> void:

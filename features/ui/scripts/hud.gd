@@ -55,10 +55,11 @@ func _on_game_started() -> void:
 
 
 func _detect_mobile() -> bool:
+	if OS.get_name() == "Android" or OS.get_name() == "iOS":
+		return true
 	if OS.get_name() == "Web":
-		var js_code: String = "(/Android|iPhone|iPad|iPod|Mobile/i).test(navigator.userAgent)"
-		return JavaScriptBridge.eval(js_code) as bool
-	return OS.get_name() == "Android" or OS.get_name() == "iOS"
+		return DisplayServer.is_touchscreen_available()
+	return false
 
 
 func show_hud() -> void:
