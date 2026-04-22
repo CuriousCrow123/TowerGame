@@ -12,6 +12,9 @@ func _ready() -> void:
 	assert(_restart_button != null, "GameOverPanel: RestartButton not found")
 	set_process(false)
 	set_physics_process(false)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_final_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_high_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_restart_button.pressed.connect(_on_restart_pressed)
 	Events.game_over.connect(_on_game_over)
 	hide()
