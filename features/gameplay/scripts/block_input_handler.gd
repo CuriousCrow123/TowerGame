@@ -34,6 +34,8 @@ func set_active_block(block: Block) -> void:
 func clear_active_block() -> void:
 	_active_block = null
 	_is_dragging = false
+	_rotate_direction = 0
+	_move_direction = 0
 	set_process(false)
 
 
@@ -56,59 +58,97 @@ func _process(delta: float) -> void:
 	_active_block.global_position.x = new_x
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if _active_block == null:
 		return
 
 	if event is InputEventScreenTouch:
-		var touch: InputEventScreenTouch = event as InputEventScreenTouch
-		if touch.index == 0:
-			if touch.pressed:
-				_is_dragging = true
-				_drag_start_pos = touch.position
-				_drag_start_time = Time.get_ticks_msec()
-			else:
-				if _is_dragging:
-					_is_dragging = false
-					_drop_block()
-		elif touch.index == 1:
-			if touch.pressed:
-				if touch.position.x < VIEWPORT_WIDTH * 0.5:
-					_rotate_direction = -1
-				else:
-					_rotate_direction = 1
-			else:
-				_rotate_direction = 0
-
+		_handle_touch(event as InputEventScreenTouch)
 	elif event is InputEventScreenDrag:
-		var drag: InputEventScreenDrag = event as InputEventScreenDrag
-		if drag.index == 0 and _is_dragging:
-			_target_x += drag.relative.x
-
-			var elapsed: float = (Time.get_ticks_msec() - _drag_start_time) / 1000.0
-			if elapsed > 0.0:
-				var distance: Vector2 = drag.position - _drag_start_pos
-				var abs_x: float = absf(distance.x)
-				var abs_y: float = absf(distance.y)
-				if drag.velocity.y > SWIPE_MIN_VELOCITY and abs_y > SWIPE_MIN_DISTANCE:
-					if abs_x / abs_y < SWIPE_DIRECTION_RATIO:
-						_hard_drop()
-
+		_handle_drag(event as InputEventScreenDrag)
+	elif event is InputEventMouseButton:
+		_handle_mouse_button(event as InputEventMouseButton)
+	elif event is InputEventMouseMotion:
+		_handle_mouse_motion(event as InputEventMouseMotion)
 	elif event is InputEventKey:
-		var key: InputEventKey = event as InputEventKey
-		if key.keycode == KEY_LEFT or key.keycode == KEY_A:
-			_move_direction = -1 if key.pressed else 0
-		elif key.keycode == KEY_RIGHT or key.keycode == KEY_D:
-			_move_direction = 1 if key.pressed else 0
-		elif key.keycode == KEY_Q:
-			_rotate_direction = -1 if key.pressed else 0
-		elif key.keycode == KEY_E:
-			_rotate_direction = 1 if key.pressed else 0
-		elif key.pressed:
-			if key.keycode == KEY_SPACE:
-				_hard_drop()
-			elif key.keycode == KEY_DOWN or key.keycode == KEY_S:
-				_drop_block()
+		_handle_key(event as InputEventKey)
+
+
+func _handle_touch(touch: InputEventScreenTouch) -> void:
+	if touch.index == 0:
+		if touch.pressed:
+			_start_drag(touch.position)
+		else:
+			_end_drag()
+	elif touch.index == 1:
+		if touch.pressed:
+			_start_touch_rotate(touch.position)
+		else:
+			_rotate_direction = 0
+
+
+func _handle_drag(drag: InputEventScreenDrag) -> void:
+	if drag.index == 0 and _is_dragging:
+		_target_x += drag.relative.x
+		_check_swipe_down(drag)
+
+
+func _handle_mouse_button(mb: InputEventMouseButton) -> void:
+	if mb.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if mb.pressed:
+		_start_drag(mb.position)
+	else:
+		_end_drag()
+
+
+func _handle_mouse_motion(mm: InputEventMouseMotion) -> void:
+	if _is_dragging and (mm.button_mask & MOUSE_BUTTON_MASK_LEFT):
+		_target_x += mm.relative.x
+
+
+func _handle_key(key: InputEventKey) -> void:
+	if key.keycode == KEY_LEFT or key.keycode == KEY_A:
+		_move_direction = -1 if key.pressed else 0
+	elif key.keycode == KEY_RIGHT or key.keycode == KEY_D:
+		_move_direction = 1 if key.pressed else 0
+	elif key.keycode == KEY_Q:
+		_rotate_direction = -1 if key.pressed else 0
+	elif key.keycode == KEY_E:
+		_rotate_direction = 1 if key.pressed else 0
+	elif key.pressed:
+		if key.keycode == KEY_SPACE:
+			_hard_drop()
+		elif key.keycode == KEY_DOWN or key.keycode == KEY_S:
+			_drop_block()
+
+
+func _start_drag(pos: Vector2) -> void:
+	_is_dragging = true
+	_drag_start_pos = pos
+	_drag_start_time = Time.get_ticks_msec()
+
+
+func _end_drag() -> void:
+	if _is_dragging:
+		_is_dragging = false
+		_drop_block()
+
+
+func _start_touch_rotate(pos: Vector2) -> void:
+	if pos.x < VIEWPORT_WIDTH * 0.5:
+		_rotate_direction = -1
+	else:
+		_rotate_direction = 1
+
+
+func _check_swipe_down(drag: InputEventScreenDrag) -> void:
+	var distance: Vector2 = drag.position - _drag_start_pos
+	var abs_x: float = absf(distance.x)
+	var abs_y: float = absf(distance.y)
+	if drag.velocity.y > SWIPE_MIN_VELOCITY and abs_y > SWIPE_MIN_DISTANCE:
+		if abs_x / abs_y < SWIPE_DIRECTION_RATIO:
+			_hard_drop()
 
 
 func _drop_block() -> void:
@@ -122,18 +162,6 @@ func _hard_drop() -> void:
 		return
 	_active_block.activate_fall()
 	_active_block.hard_drop()
-
-
-func _rotate_block() -> void:
-	if _active_block == null:
-		return
-	_active_block.rotation += PI / 2.0
-
-
-func _rotate_block_ccw() -> void:
-	if _active_block == null:
-		return
-	_active_block.rotation -= PI / 2.0
 
 
 func _get_block_half_width() -> float:
