@@ -8,8 +8,8 @@ signal game_over(final_height: float)
 signal game_restarted
 
 # Tower events
-signal block_placed(block: Node2D, height: float)
-signal block_dropped(block: Node2D)
+signal block_placed(block: RigidBody2D, height: float)
+signal block_dropped(block: RigidBody2D)
 signal tower_collapsed
 
 # Score
